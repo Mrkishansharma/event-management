@@ -12,6 +12,14 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+})
+
+app.get("/kishan", (req, res) => {
+  res.send("Hello World! kishan");
+})
+
 // Routes
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
