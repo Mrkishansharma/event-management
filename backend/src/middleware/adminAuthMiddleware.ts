@@ -14,7 +14,7 @@ export const adminAuthenticated = (req: AuthRequest, res: Response, next: NextFu
   }
 
   try {
-    const decoded:any = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
+    const decoded:any = jwt.verify(token, "kishansharma");
     console.log('decoded', decoded)
     if (decoded.role !== 'admin') {
       res.status(401).json({

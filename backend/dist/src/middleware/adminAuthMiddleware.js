@@ -13,7 +13,7 @@ const adminAuthenticated = (req, res, next) => {
         return; // Prevents further code execution
     }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET_KEY);
+        const decoded = jsonwebtoken_1.default.verify(token, "kishansharma");
         console.log('decoded', decoded);
         if (decoded.role !== 'admin') {
             res.status(401).json({

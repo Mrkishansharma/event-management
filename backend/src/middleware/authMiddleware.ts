@@ -14,7 +14,7 @@ export const isAuthenticated = (req: AuthRequest, res: Response, next: NextFunct
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
+    const decoded = jwt.verify(token, "kishansharma");
     console.log('decoded',decoded)
     req.body.userAuthorization = decoded; // Attach decoded user to the request object
     next();  // Continue to the next middleware or controller

@@ -13,7 +13,7 @@ const isAuthenticated = (req, res, next) => {
         return; // Prevents further code execution
     }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET_KEY);
+        const decoded = jsonwebtoken_1.default.verify(token, "kishansharma");
         console.log('decoded', decoded);
         req.body.userAuthorization = decoded; // Attach decoded user to the request object
         next(); // Continue to the next middleware or controller
