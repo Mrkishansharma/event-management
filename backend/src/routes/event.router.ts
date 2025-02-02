@@ -12,6 +12,7 @@ const eventRegistrationController = new EventRegistrationController();
 
 
 router.get("/", eventController.getEvents);
+router.get("/:id", eventController.getEventById);
 router.post("/", adminAuthenticated, eventController.createEvent);
 router.put("/:id",  adminAuthenticated, eventController.updateEvent);
 router.delete("/:id", adminAuthenticated, eventController.deleteEvent);

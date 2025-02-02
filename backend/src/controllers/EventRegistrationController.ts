@@ -36,7 +36,7 @@ export class EventRegistrationController {
 
       if (existingRegistration) {
         if (existingRegistration.status === "registered") {
-          return res.status(400).json({ error: false, message: "User is already registered for this event" });
+          return res.status(200).json({ error: true, message: "User is already registered for this event" });
         } else if (existingRegistration.status === "cancelled") {
           // If previously cancelled, update status to 'registered'
           existingRegistration.status = "registered";

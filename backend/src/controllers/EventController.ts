@@ -56,18 +56,97 @@ export class EventController {
   }
 
   // Get all events
+  // async getEvents(req: Request, res: Response): Promise<any> {
+  //   try {
+  //     const eventRepository = AppDataSource.getRepository(Event);
+  //     const events = await eventRepository.find({
+  //       relations: ["location_id", "created_by"], 
+  //     });
+
+  //     return res.status(200).json({
+  //       error: false,
+  //       message: "",
+  //       body: events
+  //     }); 
+  //   } catch (error) {
+  //     console.error("Error fetching events:", error);
+  //     return res.status(500).json({ error: true, message: "Failed to fetch events", body: [] });
+  //   }
+  // }
+
+
   async getEvents(req: Request, res: Response): Promise<any> {
     try {
       const eventRepository = AppDataSource.getRepository(Event);
+
+      // Extract query parameters
+      const { date, category, location, page = 1, limit = 5 } = req.query;
+      const take: any = limit || 5; // Items per page
+      const skip = (Number(page) - 1) * take; // Calculate offset
+
+      // Create query builder
+      const queryBuilder = eventRepository.createQueryBuilder("event")
+        .leftJoinAndSelect("event.location_id", "location")  // Join location table
+        .leftJoinAndSelect("event.created_by", "creator");
+
+      // Apply filters if provided
+      if (date) {
+        queryBuilder.andWhere("DATE(event.date) = :date", { date });
+      }
+      if (category) {
+        queryBuilder.andWhere("event.category = :category", { category });
+      }
+      if (location) {
+        // Search in multiple location fields using ILIKE (case-insensitive search)
+        queryBuilder.andWhere(
+          `(location.name ILIKE :location OR 
+                  location.address ILIKE :location OR 
+                  location.city ILIKE :location OR 
+                  location.state ILIKE :location OR 
+                  location.country ILIKE :location)`,
+          { location: `%${location}%` } // Partial match using wildcard
+        );
+      }
+
+      // Apply pagination
+      queryBuilder.skip(skip).take(take);
+
+      // Execute query
+      const [events, total] = await queryBuilder.getManyAndCount();
+
+      return res.status(200).json({
+        error: false,
+        message: "",
+        body: {
+          events,
+          total,
+          page: Number(page),
+          totalPages: Math.ceil(total / take),
+        }
+      });
+
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      return res.status(500).json({ error: true, message: "Failed to fetch events", body: [] });
+    }
+  }
+
+
+  // Get event by id
+  async getEventById(req: Request, res: Response): Promise<any> {
+    try {
+      const { id } = req.params;
+      const eventRepository = AppDataSource.getRepository(Event);
       const events = await eventRepository.find({
-        relations: ["location_id", "created_by"], 
+        where: { id: parseInt(id) },
+        relations: ["location_id", "created_by"],
       });
 
       return res.status(200).json({
         error: false,
         message: "",
         body: events
-      }); 
+      });
     } catch (error) {
       console.error("Error fetching events:", error);
       return res.status(500).json({ error: true, message: "Failed to fetch events", body: [] });
@@ -96,6 +175,7 @@ export class EventController {
       }
 
       // Update event fields
+      event.id = parseInt(id);
       event.title = title || event.title;
       event.description = description || event.description;
       event.date = date || event.date;
