@@ -40,7 +40,7 @@ class EventRegistrationController {
                 });
                 if (existingRegistration) {
                     if (existingRegistration.status === "registered") {
-                        return res.status(400).json({ error: false, message: "User is already registered for this event" });
+                        return res.status(200).json({ error: true, message: "User is already registered for this event" });
                     }
                     else if (existingRegistration.status === "cancelled") {
                         // If previously cancelled, update status to 'registered'
@@ -73,7 +73,6 @@ class EventRegistrationController {
                 // Fetch all registrations with related user and event data
                 const eventRegistrationRepository = ormconfig_1.AppDataSource.getRepository(EventRegistration_1.EventRegistration);
                 const registrations = yield eventRegistrationRepository.find({
-                    where: { user_id: userId },
                     relations: ["user", "event"], // Include related entities like user and event
                 });
                 // Return the list of registrations

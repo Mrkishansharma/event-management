@@ -55,24 +55,6 @@ export class EventController {
     }
   }
 
-  // Get all events
-  // async getEvents(req: Request, res: Response): Promise<any> {
-  //   try {
-  //     const eventRepository = AppDataSource.getRepository(Event);
-  //     const events = await eventRepository.find({
-  //       relations: ["location_id", "created_by"], 
-  //     });
-
-  //     return res.status(200).json({
-  //       error: false,
-  //       message: "",
-  //       body: events
-  //     }); 
-  //   } catch (error) {
-  //     console.error("Error fetching events:", error);
-  //     return res.status(500).json({ error: true, message: "Failed to fetch events", body: [] });
-  //   }
-  // }
 
 
   async getEvents(req: Request, res: Response): Promise<any> {
@@ -126,7 +108,7 @@ export class EventController {
       });
 
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error("Error fetching events get Events:", error);
       return res.status(500).json({ error: true, message: "Failed to fetch events", body: [] });
     }
   }
@@ -134,6 +116,7 @@ export class EventController {
 
   // Get event by id
   async getEventById(req: Request, res: Response): Promise<any> {
+    console.log('GET EVENT BY ID API CALL')
     try {
       const { id } = req.params;
       const eventRepository = AppDataSource.getRepository(Event);
@@ -148,8 +131,8 @@ export class EventController {
         body: events
       });
     } catch (error) {
-      console.error("Error fetching events:", error);
-      return res.status(500).json({ error: true, message: "Failed to fetch events", body: [] });
+      console.error("Error fetching events getEvent By Id:", error);
+      return res.status(500).json({ error: true, message: "Failed to fetch event", body: [] });
     }
   }
 

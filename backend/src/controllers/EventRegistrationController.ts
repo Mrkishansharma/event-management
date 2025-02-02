@@ -61,6 +61,7 @@ export class EventRegistrationController {
       return res.status(500).json({ error: true, message: "Failed to register user for event" });
     }
   }
+
   async getAllEventRegistrations(req: Request, res: Response): Promise<any> {
     try {
       const userId = req?.body?.userAuthorization?.id;

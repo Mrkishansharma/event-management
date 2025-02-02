@@ -12,14 +12,14 @@ const eventRegistrationController = new EventRegistrationController();
 
 
 router.get("/", eventController.getEvents);
-router.get("/:id", eventController.getEventById);
 router.post("/", adminAuthenticated, eventController.createEvent);
-router.put("/:id",  adminAuthenticated, eventController.updateEvent);
+router.put("/:id", adminAuthenticated, eventController.updateEvent);
 router.delete("/:id", adminAuthenticated, eventController.deleteEvent);
 
 router.post("/:id/register", isAuthenticated, eventRegistrationController.registerForEvent);
-router.get("/registrations", isAuthenticated, eventRegistrationController.getAllEventRegistrations)
-router.get("/admin/registrations", adminAuthenticated, eventRegistrationController.getAllAdminEventRegistrations)
-router.post("/:id/cancel", isAuthenticated, eventRegistrationController.cancelRegistration)
+router.get("/admin/registrations", adminAuthenticated, eventRegistrationController.getAllAdminEventRegistrations);
+router.get("/registrations", adminAuthenticated, eventRegistrationController.getAllEventRegistrations);
+router.post("/:id/cancel", isAuthenticated, eventRegistrationController.cancelRegistration);
 
+router.get("/:id", eventController.getEventById);
 export default router;
