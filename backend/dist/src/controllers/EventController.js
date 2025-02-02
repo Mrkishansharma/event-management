@@ -1,0 +1,145 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EventController = void 0;
+const ormconfig_1 = require("../../ormconfig");
+const Event_1 = require("../entities/Event");
+const User_1 = require("../entities/User");
+const Location_1 = require("../entities/Location");
+class EventController {
+    // Create a new event
+    createEvent(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                const { title, description, date, category, location_id } = req.body;
+                const created_by = (_b = (_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.userAuthorization) === null || _b === void 0 ? void 0 : _b.id;
+                // Check if user is admin
+                const user = yield ormconfig_1.AppDataSource.getRepository(User_1.User).findOneBy({ id: created_by });
+                if (!user) {
+                    return res.status(403).json({ error: true, message: "You do not have permission to create an event" });
+                }
+                // Check if location exists
+                const location = yield ormconfig_1.AppDataSource.getRepository(Location_1.Location).findOneBy({ id: location_id });
+                if (!location) {
+                    return res.status(400).json({ error: true, message: "Location not found" });
+                }
+                // Create new event instance
+                const eventRepository = ormconfig_1.AppDataSource.getRepository(Event_1.Event);
+                const event = eventRepository.create({
+                    title,
+                    description,
+                    date,
+                    category,
+                    location_id,
+                    created_by,
+                });
+                // Save event to database
+                yield eventRepository.save(event);
+                // Return created event
+                return res.status(201).json({
+                    error: false,
+                    message: 'event created succussfull',
+                    body: event
+                });
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).json({
+                    error: true,
+                    message: 'Internal Server Error'
+                });
+            }
+        });
+    }
+    // Get all events
+    getEvents(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const eventRepository = ormconfig_1.AppDataSource.getRepository(Event_1.Event);
+                const events = yield eventRepository.find({
+                    relations: ["location_id", "created_by"],
+                });
+                return res.status(200).json({
+                    error: false,
+                    message: "",
+                    body: events
+                });
+            }
+            catch (error) {
+                console.error("Error fetching events:", error);
+                return res.status(500).json({ error: true, message: "Failed to fetch events", body: [] });
+            }
+        });
+    }
+    // Update an event
+    updateEvent(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                const { id } = req.params;
+                const { title, description, date, category, location_id } = req.body;
+                const created_by = (_b = (_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.userAuthorization) === null || _b === void 0 ? void 0 : _b.id;
+                const eventRepository = ormconfig_1.AppDataSource.getRepository(Event_1.Event);
+                const event = yield eventRepository.findOneBy({ id: parseInt(id) });
+                if (!event) {
+                    return res.status(404).json({ message: "Event not found" });
+                }
+                // Check if location and user exist
+                const location = yield ormconfig_1.AppDataSource.getRepository(Location_1.Location).findOneBy({ id: location_id });
+                if (!location) {
+                    return res.status(400).json({ message: "Location not found" });
+                }
+                // Update event fields
+                event.title = title || event.title;
+                event.description = description || event.description;
+                event.date = date || event.date;
+                event.category = category || event.category;
+                event.location_id = location_id;
+                event.created_by = created_by;
+                // Save updated event
+                yield eventRepository.save(event);
+                return res.status(200).json({
+                    error: false,
+                    message: "update succussfull",
+                    body: event
+                });
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).json({
+                    error: false,
+                    message: "Something went wrong"
+                });
+            }
+        });
+    }
+    // Delete an event
+    deleteEvent(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const eventRepository = ormconfig_1.AppDataSource.getRepository(Event_1.Event);
+                const event = yield eventRepository.findOneBy({ id: parseInt(id) });
+                if (!event) {
+                    return res.status(404).json({ message: "Event not found" });
+                }
+                // Delete event
+                yield eventRepository.remove(event);
+                return res.status(200).json({ error: false, message: "Event deleted successfully" });
+            }
+            catch (error) {
+                return res.status(500).json({ error: true, message: "Event deleted successfully" });
+            }
+        });
+    }
+}
+exports.EventController = EventController;

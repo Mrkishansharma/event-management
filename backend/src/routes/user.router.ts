@@ -6,4 +6,4 @@ const userController = new UserController();
 
 router.get("/getAllUser", userController.getAllUsers);
 
-export default router;
+export default router; 
