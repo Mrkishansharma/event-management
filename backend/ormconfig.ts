@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import dotenv from "dotenv";
+import { User } from "./src/entities/User";
 
 dotenv.config();
 
@@ -10,9 +11,9 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false, // Ensure SSL is allowed
   },
-  // entities: ["src/entities/*.ts"],
+  entities: ["src/entities/*.ts"],
   logging: false,
-  entities: ["dist/entities/*.js"],
+  // entities: ["dist/entities/*.js"],
   migrations: ["dist/migrations/*.js"],
   subscribers: []
 });
