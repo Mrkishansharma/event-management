@@ -73,6 +73,7 @@ class EventRegistrationController {
                 // Fetch all registrations with related user and event data
                 const eventRegistrationRepository = ormconfig_1.AppDataSource.getRepository(EventRegistration_1.EventRegistration);
                 const registrations = yield eventRegistrationRepository.find({
+                    where: { user_id: userId },
                     relations: ["user", "event"], // Include related entities like user and event
                 });
                 // Return the list of registrations

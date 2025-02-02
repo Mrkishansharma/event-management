@@ -14,6 +14,7 @@ const ormconfig_1 = require("../../ormconfig");
 const Event_1 = require("../entities/Event");
 const User_1 = require("../entities/User");
 const Location_1 = require("../entities/Location");
+const EventRegistration_1 = require("../entities/EventRegistration");
 class EventController {
     // Create a new event
     createEvent(req, res) {
@@ -112,6 +113,7 @@ class EventController {
     // Get event by id
     getEventById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('GET EVENT BY ID API CALL');
             try {
                 const { id } = req.params;
                 const eventRepository = ormconfig_1.AppDataSource.getRepository(Event_1.Event);
@@ -175,21 +177,42 @@ class EventController {
         });
     }
     // Delete an event
+    // async deleteEvent(req: Request, res: Response): Promise<any> {
+    //   try {
+    //     const { id } = req.params;
+    //     const eventRepository = AppDataSource.getRepository(Event);
+    //     const event = await eventRepository.findOneBy({ id: parseInt(id) });
+    //     if (!event) {
+    //       return res.status(404).json({ message: "Event not found" });
+    //     }
+    //     // Delete event
+    //     await eventRepository.remove(event);
+    //     return res.status(200).json({ error: false, message: "Event deleted successfully" });
+    //   } catch (error: any) {
+    //     return res.status(500).json({ error: true, message: error.message || "Something Went Wrong" });
+    //   }
+    // }
     deleteEvent(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req.params;
+                const eventId = parseInt(id);
                 const eventRepository = ormconfig_1.AppDataSource.getRepository(Event_1.Event);
-                const event = yield eventRepository.findOneBy({ id: parseInt(id) });
+                const registrationRepository = ormconfig_1.AppDataSource.getRepository(EventRegistration_1.EventRegistration);
+                // Check if the event exists
+                const event = yield eventRepository.findOneBy({ id: eventId });
                 if (!event) {
-                    return res.status(404).json({ message: "Event not found" });
+                    return res.status(404).json({ error: true, message: "Event not found" });
                 }
-                // Delete event
-                yield eventRepository.remove(event);
+                // Delete related event registrations first
+                yield registrationRepository.delete({ event: { id: eventId } });
+                // Now delete the event
+                yield eventRepository.delete(eventId);
                 return res.status(200).json({ error: false, message: "Event deleted successfully" });
             }
             catch (error) {
-                return res.status(500).json({ error: true, message: "Event deleted successfully" });
+                console.error("Error deleting event:", error);
+                return res.status(500).json({ error: true, message: error.message || "Something went wrong" });
             }
         });
     }

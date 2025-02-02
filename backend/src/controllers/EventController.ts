@@ -3,6 +3,7 @@ import { AppDataSource } from "../../ormconfig";
 import { Event } from "../entities/Event";
 import { User } from "../entities/User";
 import { Location } from "../entities/Location";
+import { EventRegistration } from "../entities/EventRegistration";
 
 export class EventController {
 
@@ -186,25 +187,53 @@ export class EventController {
   }
 
   // Delete an event
+  // async deleteEvent(req: Request, res: Response): Promise<any> {
+  //   try {
+  //     const { id } = req.params;
+  //     const eventRepository = AppDataSource.getRepository(Event);
+
+  //     const event = await eventRepository.findOneBy({ id: parseInt(id) });
+
+  //     if (!event) {
+  //       return res.status(404).json({ message: "Event not found" });
+  //     }
+
+  //     // Delete event
+  //     await eventRepository.remove(event);
+
+  //     return res.status(200).json({ error: false, message: "Event deleted successfully" });
+
+  //   } catch (error: any) {
+  //     return res.status(500).json({ error: true, message: error.message || "Something Went Wrong" });
+
+  //   }
+  // }
+
   async deleteEvent(req: Request, res: Response): Promise<any> {
     try {
       const { id } = req.params;
+      const eventId = parseInt(id);
+
       const eventRepository = AppDataSource.getRepository(Event);
+      const registrationRepository = AppDataSource.getRepository(EventRegistration);
 
-      const event = await eventRepository.findOneBy({ id: parseInt(id) });
-
+      // Check if the event exists
+      const event = await eventRepository.findOneBy({ id: eventId });
       if (!event) {
-        return res.status(404).json({ message: "Event not found" });
+        return res.status(404).json({ error: true, message: "Event not found" });
       }
 
-      // Delete event
-      await eventRepository.remove(event);
+      // Delete related event registrations first
+      await registrationRepository.delete({ event: { id: eventId } });
+
+      // Now delete the event
+      await eventRepository.delete(eventId);
 
       return res.status(200).json({ error: false, message: "Event deleted successfully" });
-
-    } catch (error) {
-      return res.status(500).json({ error: true, message: "Event deleted successfully" });
-
+    } catch (error: any) {
+      console.error("Error deleting event:", error);
+      return res.status(500).json({ error: true, message: error.message || "Something went wrong" });
     }
   }
+
 }
