@@ -5,7 +5,7 @@ import RouteConstants from '../routes/routeConstants';
 import Navbar from './NavBar';
 import { BASE_URL } from '../App';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+import toast, { ToastBar } from 'react-hot-toast';
 import AppLoader from '../components/AppLoader';
 import { EventContext } from '../contexts/EventContext';
 import { useEventContext } from '../hooks/useEventContext';
@@ -49,7 +49,7 @@ const EventDashboard = () => {
           toast.error(data.message || 'something went wrong! try again');
           return;
         }
-        if (data.message) alert(data.message);
+        if (data.message) toast.success(data.message);
         console.log(data.body)
         // setEventsData(data.body?.events);
         setEvents(data.body?.events);

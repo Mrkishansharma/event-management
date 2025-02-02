@@ -5,6 +5,7 @@ import RouteConstants from '../routes/routeConstants';
 import Navbar from './NavBar';
 import { BASE_URL } from '../App';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 
 const MyEvents = () => {
@@ -26,10 +27,10 @@ const MyEvents = () => {
         })
         const data = res.data;
         if (data.error) {
-            alert(data.message || 'something went wrong! try again');
+            toast.error(data.message || 'something went wrong! try again');
             return;
         }
-        if (data.message) alert(data.message);
+        if (data.message) toast.success(data.message);
         console.log(data.body)
         setEventsData(data.body);
     }
@@ -47,10 +48,10 @@ const MyEvents = () => {
         })
         const data = res.data;
         if (data.error) {
-            alert(data.message || 'something went wrong! try again');
+            toast.error(data.message || 'something went wrong! try again');
             return;
         }
-        if (data.message) alert(data.message);
+        if (data.message) toast.success(data.message);
         fun();
         console.log(data.body)
     }

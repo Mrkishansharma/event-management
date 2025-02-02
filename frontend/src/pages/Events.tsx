@@ -5,6 +5,7 @@ import CreateEvent from './createEvent';
 import Navbar from './NavBar';
 import axios from 'axios';
 import { BASE_URL } from '../App';
+import toast from 'react-hot-toast';
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -27,7 +28,7 @@ const Events = () => {
       })
       const data = res.data
       if (data.error) {
-        alert(data.message || 'something went wrong! try again')
+        toast.error(data.message || 'something went wrong! try again')
         return
       }
       console.log('data', data)
@@ -68,7 +69,7 @@ const Events = () => {
 
     const data = res.data
     if (data.error) {
-      alert(data.message || 'something went wrong! try again')
+      toast.error(data.message || 'something went wrong! try again')
       return
     }
 
@@ -91,7 +92,7 @@ const Events = () => {
       })
       const data = res.data
       if (data.error) {
-        alert(data.message || 'something went wrong! try again')
+        toast.error(data.message || 'something went wrong! try again')
         return
       }
       setIsFlag(!isFlag)
@@ -127,7 +128,7 @@ const Events = () => {
     })
     const data = res.data
     if (data.error) {
-      alert(data.message || 'something went wrong! try again')
+      toast.error(data.message || 'something went wrong! try again')
       return
     }
     setIsFlag(!isFlag)
@@ -161,7 +162,11 @@ const Events = () => {
             {/* <CardDetail>Created At: {new Date(event.created_at).toLocaleString()}</CardDetail> */}
             <ButtonContainer>
               <EditButton onClick={() => handleEditfunction(event.id, event)}>Edit</EditButton>
-              <DeleteButton onClick={() => handleDelete(event.id)}>Delete</DeleteButton>
+              <DeleteButton onClick={() => {
+                if(window.confirm("Are you sure you want to delete this event?")) {
+                  handleDelete(event.id)
+                }
+              }}>Delete</DeleteButton>
             </ButtonContainer>
           </Card>
         ))}

@@ -4,6 +4,7 @@ import CreateLocation from './CreateLocation';
 import Navbar from './NavBar';
 import axios from 'axios';
 import { BASE_URL } from '../App';
+import toast from 'react-hot-toast';
 
 const Locations = () => {
   const [locations, setLocations] = useState([]);
@@ -22,7 +23,7 @@ const Locations = () => {
       })
       const data = res.data;
       if (data.error) {
-        alert(data.message || 'something went wrong! try again');
+        toast.error(data.message || 'something went wrong! try again');
         return;
       }
       console.log('data', data)
@@ -53,7 +54,7 @@ const Locations = () => {
     })
     const data = res.data;
     if (data.error) {
-      alert(data.message || 'something went wrong! try again');
+      toast.error(data.message || 'something went wrong! try again');
       return;
     }
     console.log('data', data)
