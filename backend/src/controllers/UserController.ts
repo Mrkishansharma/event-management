@@ -26,7 +26,7 @@ export class UserController {
 
       // // Create new user instance
       const userRepository = AppDataSource.getRepository(User);
-      const user = userRepository.create({ name, email, password_hash: hashedPassword, role: UserRole.ADMIN });
+      const user = userRepository.create({ name, email, password_hash: hashedPassword });
 
       // Save to database
       await userRepository.save(user);
